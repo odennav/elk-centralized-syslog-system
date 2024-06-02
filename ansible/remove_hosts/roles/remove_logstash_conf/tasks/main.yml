@@ -1,0 +1,21 @@
+- name: Removing the logstash configuration to remote hosts
+  tags:
+    - remove_logstash_configurations
+
+
+  block:
+
+    - name: Remove logstash configuration file
+      ansible.builtin.file:
+        path: /etc/logstash.conf
+        state: absent
+      notify: restart_rsyslog
+
+    handlers:
+    - name: restart_rsyslog
+      ansible.builtin.systemd_service:
+        state: restarted
+        daemon_reload: true
+        name: rsyslog
+
+

@@ -1,0 +1,6 @@
+---
+
+- hosts: message_processors
+  become: true
+  roles:
+    - add_logstash_conf

@@ -1,0 +1,32 @@
+- name: Mapping the logstash configuration to remote hosts
+  tags:
+    - setup_logstash_configurations
+
+
+  block:
+
+    - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
+      ansible.builtin.file:
+        path: /etc/logstash.conf
+        state: touch
+        mode: 0755
+      tags:
+        - touch_logstash_conf
+
+
+    - name: generate logstash config from template
+      template:
+        src: /elk-centralized-logging-system/logstash/logstash.conf
+        dest: /etc/rsyslog.d/logstash.conf
+        mode: 0644
+      notify: restart_rsyslog
+
+    handlers:
+    - name: restart_rsyslog
+      ansible.builtin.systemd_service:
+        state: restarted
+        daemon_reload: true
+        name: rsyslog
+
+
+

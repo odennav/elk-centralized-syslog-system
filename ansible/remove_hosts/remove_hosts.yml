@@ -1,0 +1,6 @@
+---
+
+- hosts: message_processors
+  become: true
+  roles:
+    - remove_logstash_conf

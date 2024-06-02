@@ -4,11 +4,11 @@ The ELK stack consists of Elasticsearch, Logstash, and Kibana.
 
 They provide a powerful, flexible, and scalable solution for managing and making sense of large amounts of data.
 
-Logstash is a data processing pipeline. It gathers, processes and forwards data (logs, metrics) from various sources to Elasticsearch.
+**`Logstash`**: a data processing pipeline which gathers, processes and forwards data (logs, metrics) from various sources to Elasticsearch.
 
-Elasticsearch is a distributed search and analytics engine. It stores this processed data and enables powerful search and analytics capabilities.
+**`Elasticsearch`**: a distributed search and analytics engine that stores this processed data and enables powerful search and analytics capabilities.
 
-Kibana is a data visualization and exploration tool. It provides a graphical interface to visualize and explore the data stored in Elasticsearch.
+**`Kibana`**: a data visualization and exploration tool. It provides a graphical interface to visualize and explore the data stored in Elasticsearch.
 
 ![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/ELK%20Syslog%20System.png)
 
@@ -379,6 +379,8 @@ sudo journalctl -u kibana.service
 
 Browse `192.168.10.1:5601` to view Kibana UI and click on `Explore on my own` link to get started with Elastic.
 
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/view_kibana.png)
+
 -----
 
 ## Enable ELK CLustering
@@ -548,19 +550,31 @@ Impplement the following steps below:
 
 - Click on the hamburger menu icon, then click on the **`Stack Management`** link under the **`Management`** section of the menu.
 
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/stack_mgt.png)
+
 - Scroll down. Under the **`Kibana`** section, click the **`Index Patterns`** link.
+
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/index_paterns.png)
 
 - There will be a pop-up display labeled `About Index Patterns` in the right-hand side of your screen. Click the `x` to close it.
 
 - Now click on the `Create index pattern` button.
 
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/create_index_pattern.png)
+
 - In the `Index pattern name` field, enter `logstash*` and then click `Next Step >` button. 
  
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/index_pattern_name.png)
+
   This tells Kibana to use any indices in Elasticsearch that start with `logstash`.
 
 - In the `Time Field` dropdown menu, select `@timestamp`, then click the `Create index pattern` button.
 
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/timestamp.png)
+
  A screen will appear that shows information about the index pattern that we've just created.
+
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/logstash_index_pattern.png)
 
 
 **Confirm Log Sources from Remote Hosts**
@@ -568,6 +582,8 @@ Impplement the following steps below:
 Now we can start searching for log messages
 
 - Click on the hamburger menu icon, then click on the **`Discover`** link under the **`Kibana`** section of the menu.
+
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/discover.png)
 
 - At the left-hand **`field`** menu, click on **`logsource`**.
  
@@ -599,7 +615,11 @@ Implement the following steps:
 
 - Scroll down and click `Vertical Bar`.
 
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/vertical_bar.png)
+
 - Next, click on `logstash*` index pattern.
+
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/logstash_icon.png)
 
 - In the search bar, type in `tags:ssh_failed_login` and click on the `Refresh` button. Set date as `Last 1 hour` to capture events of multiple failed ssh login attempts.
 
@@ -629,6 +649,8 @@ Implement the following steps:
 - Click on the hamburger menu icon, then click on the **`Dashboard`** link under the **`Kibana`** section of the menu.
 
 - Click on the `Create new dashboard` button.
+
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/create_new_dashboard.png)
 
 - Click on the `Add an existing object` link, then click on `Failed SSH Logins`. 
 

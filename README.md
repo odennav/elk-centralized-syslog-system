@@ -413,14 +413,10 @@ We'll use `cs2` node as our additional elasticsearch cluster member.
 
 4. Implement the same steps done for `cs1` node in `cs2` node:
 
-- Install Elasticsearch
-
-- Install Logstash
-
-- Install Kibana
+- Install Elasticsearch, Logstash, Kibana
 
 
-5. Ensure elasticsearch cluster in second node is named
+5. Ensure the elasticsearch cluster in second node is named as `syslog`
 
 ```bash
 sudo vi /etc/elasticsearch/elasticsearch.yml

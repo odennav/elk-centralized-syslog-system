@@ -1,4 +1,4 @@
-# ELK Centralized Logging System
+# Elasticsearch Centralized Logging System
 
 The ELK stack consists of Elasticsearch, Logstash, and Kibana.
 
@@ -10,13 +10,15 @@ Elasticsearch is a distributed search and analytics engine. It stores this proce
 
 Kibana is a data visualization and exploration tool. It provides a graphical interface to visualize and explore the data stored in Elasticsearch.
 
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/ELK%20Syslog%20System.png)
+
 **Benefits of ELK Stack**
 
-Real-time Insights: They enable real-time data processing and visualization, which is crucial for monitoring and quick decision-making.
+**`Real-time Insights`**: They enable real-time data processing and visualization, which is crucial for monitoring and quick decision-making.
 
-Scalability: They can handle large-scale data operations, making them suitable for big data applications.
+**`Scalability`**: They can handle large-scale data operations, making them suitable for big data applications.
 
-Flexibility: They support a wide range of data types and sources, providing flexibility in how data is ingested, stored, and analyzed.
+**`Flexibility`**: They support a wide range of data types and sources, providing flexibility in how data is ingested, stored, and analyzed.
 
 
 ## Getting Started

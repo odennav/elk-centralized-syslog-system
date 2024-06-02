@@ -379,7 +379,7 @@ sudo journalctl -u kibana.service
 
 Browse `192.168.10.1:5601` to view Kibana UI and click on `Explore on my own` link to get started with Elastic.
 
-                     ![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/view_kibana.png)
+![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/view_kibana.png)
 
 -----
 

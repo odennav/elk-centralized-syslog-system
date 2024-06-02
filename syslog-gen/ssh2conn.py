@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# This script attempts to establish a direct SSH connection to remote hosts using the ssh2 class
+
 from ssh2 import SSH, SSHConfigData, SSHConnectionError
 
 HOSTNAME = ["192.168.20.2", "192.168.20.3", "192.168.20.4", "192.168.20.5", "192.168.20.7", "192.168.10.8"]

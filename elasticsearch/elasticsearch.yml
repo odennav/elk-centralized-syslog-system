@@ -1,6 +1,6 @@
 cluster.name: syslog
-node.name: cs1
-network.host: [192.168.10.1, _local_]
-discovery.zen.ping.unicast.hosts: ["192.168.10.1", "192.168.10.6"]
+node.name: central-server-1
+network.host: [10.33.10.1, _local_]
+discovery.zen.ping.unicast.hosts: ["10.33.10.1", "10.33.10.6"]
 action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,.ml*
 

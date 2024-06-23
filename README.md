@@ -25,7 +25,7 @@ They provide a powerful, flexible, and scalable solution for managing and making
 
 We'll implement the workflow below:
 
-- Provision Central Server
+- Provision Servers with Terraform
 
 - User Configuration on Linux Servers
 
@@ -39,31 +39,74 @@ We'll implement the workflow below:
 
 - Create Kibana Dashboard
 
+Machine image used in terraform configuration is `CentOS 8`.
+
 -----
 
-## Provision Central Server
+## Provision Servers with Terraform
 
-Eight linux servers are provisioned with Vagrant in this lab. Use Vagrantfile in this repository.
-
-**Install Vagrant**
-
-If you haven't installed Vagrant for this lab, download it here and follow the installation instructions for your OS.
-
-If you encounter an issue with Windows, you might get a blue screen upon attempt to bring up a VirtualBox VM with Hyper-V enabled.
-
-To use VirtualBox on Windows, ensure Hyper-V is not enabled. Then turn off the feature with the following Powershell commands:
+Install Terraform in `build` machine
 
 ```bash
-Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All
-bcdedit /set hypervisorlaunchtype off
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+sudo yum -y install terraform
 ```
 
-After reboot of your local machine, run:
-
+Install AWS CLI in `build` machine
 ```bash
-vagrant up cs1
-vagrant ssh cs1
+sudo apt install curl unzip
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
 ```
+
+Confirm the AWS CLI installation
+```bash
+aws --version
+```
+
+Clone this repository in the `build` machine
+```bash
+cd /
+git clone git@github.com:odennav/elk-centralized-syslog-system.git
+```
+
+Execute these Terraform commands sequentially in the `build` machine to create the AWS VPC(Virtual Private Cloud) and EC2 instances.
+
+Initializes terraform working directory
+```bash
+cd elk-centralized-syslog-system/terraform
+terraform init
+```
+
+Validate the syntax of the terraform configuration files
+```bash
+terraform validate
+```
+
+Create an execution plan that describes the changes terraform will make to the infrastructure
+```bash
+terraform plan
+```
+
+Apply the changes described in execution plan
+```bash
+terraform apply -auto-approve
+```
+
+Check AWS console for instances created and running
+
+**SSH access**
+
+Use `.pem` key from AWS to SSH into the public EC2 instance. IPv4 address of public EC2 instance will be shown in terraform outputs.
+```bash
+ssh -i private-key/terraform-key.pem ec2-user@<ipaddress>
+```
+
+We can use public EC2 instance as a jumpbox to securely SSH into private EC2 instances within the VPC.
+
+Note, the ansible `inventory` is built dynamically by terraform with the private ip addresses of the `EC2` machines.
 
 -----
 

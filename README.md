@@ -114,7 +114,7 @@ Note, the ansible `inventory` is built dynamically by terraform with the private
 
 Add New User
 
-We'll use cs1 virtual machine as our build machine. Integrations to pipeline is implemented on this server
+We'll use the `central-server-1` virtual machine as our build machine. Integrations to pipeline is implemented on this server
 
 Change password for root user
 
@@ -148,7 +148,7 @@ su - odennav
 sudo ls -la /root
 ```
 
-To change the PermitRootLogin setting, modify the SSH server configuration file /etc/ssh/sshd_config as shown below:
+To change the PermitRootLogin setting, modify the SSH server configuration file `/etc/ssh/sshd_config` as shown below:
 
 ```bash
 PermitRootLogin no
@@ -172,7 +172,7 @@ sudo grep PermitRootLogin /etc/ssh/sshd_config
 
 **Install Elasticsearch with RPM**
 
-Download from elastic website and install the RPM manually 
+Download from elastic website and install the `RPM` manually 
 ```bash
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.13.4-x86_64.rpm
 ```
@@ -215,15 +215,15 @@ Name Elasticsearch Cluster
 sudo vi /etc/elasticsearch/elasticsearch.yml
 ```
 
-For a production environment, it's beneficial to have shards distributed. We'll configure elasticsearch to communicate with outside network and look for an additional node, `cs2`.
+For a production environment, it's beneficial to have shards distributed. We'll configure elasticsearch to communicate with outside network and look for an additional node, `central-server-2`.
  
 Add this to end of `elasticsearch.yml` and save the configuration.
 
 ```bash
 cluster.name: syslog
-node.name: cs1
-network.host: [192.168.10.1, _local_]
-discovery.zen.ping.unicast.hosts: ["192.168.10.1", "192.168.10.6"]
+node.name: central-server-1
+network.host: [10.33.10.1, _local_]
+discovery.zen.ping.unicast.hosts: ["10.33.10.1", "10.33.10.6"]
 action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,.ml*
 ```
 
@@ -290,8 +290,8 @@ Our logstash configuration will have three main blocks:
 - **`Filter`**: process messages it receives that match the given patterns.
   
   It extracts the authentication method, the username, the source IP address, and source   
-  port for ssh connection attempts. Also tags the messages with "ssh_successful_login" or
-  "ssh_failed_login".
+  port for ssh connection attempts. Also tags the messages with `ssh_successful_login` or
+  `ssh_failed_login`.
 
 - **`Output`**:  store the messages into the elasticsearch instance we just created.
 
@@ -338,7 +338,7 @@ sudo systemctl enable logstash.service
 
 **Forward Syslogs to Logstash**
 
-Next, we configure `cs1` node tp forward its syslog messages to logstash.
+Next, we configure `central-server-1` node tp forward its syslog messages to logstash.
 
 Create logstash configuration file
 ```bash
@@ -346,7 +346,7 @@ sudo touch /etc/rsyslog.d/logstash.conf
 ```
 Add this to `logstash.conf` and save
 ```bash
-*.* @192.168.10.1:5141
+*.* @10.33.10.1:5141
 ```
  
 
@@ -355,7 +355,7 @@ Restart rsyslog service
 sudo systemctl restart rsyslog
 ```
 
-Confirm logstash is now receiving syslog messages from `cs1` node and and storing them in Elasticsearch.
+Confirm logstash is now receiving syslog messages from `central-server-1` node and and storing them in Elasticsearch.
 
 ```bash
 curl --cacert /etc/elasticsearch/certs/http_ca.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/_cat/indices?v
@@ -396,7 +396,7 @@ sudo vi /etc/kibana/kibana.yml
 
 Add this to the configuration file, `kibana.yml`
 ```bash
-server.host: "192.168.10.1"
+server.host: "10.33.10.1"
 ```
 
 **Securely connect kibana with elasticsearch**
@@ -420,7 +420,7 @@ To receive feedback whether Kibana was started successfully or not
 sudo journalctl -u kibana.service
 ```
 
-Browse `192.168.10.1:5601` to view Kibana UI and click on `Explore on my own` link to get started with Elastic.
+Browse `10.33.10.1:5601` to view Kibana UI and click on `Explore on my own` link to get started with Elastic.
 
 ![](https://github.com/odennav/elk-centralized-syslog-system/blob/main/docs/view_kibana.png)
 
@@ -430,14 +430,14 @@ Browse `192.168.10.1:5601` to view Kibana UI and click on `Explore on my own` li
 
 **Configure Node to Join Cluster**
 
-When Elasticsearch was installed in first node `cs1`, the installation process configured a single-node cluster by default.
+When Elasticsearch was installed in first node `central-server-1`, the installation process configured a single-node cluster by default.
 
 To enable a node to join an existing cluster instead, implement the following:
 
-1. Generate an enrollment token on an existing node, `cs1` before you start the new node 
+1. Generate an enrollment token on an existing node, `central-server-1` before you start the new node 
 `cs2` for the first time.
 
- On `cs1` in our existing cluster, generate a node enrollment token
+ On `central-server-1` in our existing cluster, generate a node enrollment token
 
 ```bash
 /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s node
@@ -445,21 +445,12 @@ To enable a node to join an existing cluster instead, implement the following:
 
 2. Copy the enrollment token, which is output to your terminal.
 
-3. Start `cs2` local machine, run:
+   We'll use `central-server-2` node as our additional elasticsearch cluster member.
 
-```bash
-vagrant up cs2
-vagrant ssh cs2
-```
-
-We'll use `cs2` node as our additional elasticsearch cluster member.
-
-4. Implement the same steps done for `cs1` node in `cs2` node:
-
-- Install Elasticsearch, Logstash, Kibana
+3. Implement the same steps done for `central-server-1` node in `central-server-2` node: Install Elasticsearch, Logstash, Kibana
 
 
-5. Ensure the elasticsearch cluster in second node is named as `syslog`
+4. Ensure the elasticsearch cluster in second node is named as `syslog`
 
 ```bash
 sudo vi /etc/elasticsearch/elasticsearch.yml
@@ -469,16 +460,16 @@ Add this to end of `elasticsearch.yml` and save the configuration.
 
 ```bash
 cluster.name: syslog
-node.name: cs2
-network.host: [192.168.10.6, _local_]
-discovery.zen.ping.unicast.hosts: ["192.168.10.1", "192.168.10.6"]
+node.name: central-server-2
+network.host: [10.33.10.6, _local_]
+discovery.zen.ping.unicast.hosts: ["10.33.10.1", "10.3.10.6"]
 action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,.ml*
 ```
 
 This new second server will automatically discover and join the cluster as long as it has the same `cluster.name` as the first node.
 
 
-6. On your new Elasticsearch node, `cs2`, pass the enrollment token generated in step1 as a parameter to the elasticsearch-reconfigure-node tool
+5. On your new Elasticsearch node, `central-server-2`, pass the enrollment token generated in step1 as a parameter to the elasticsearch-reconfigure-node tool
 ```bash
 /usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token <enrollment-token>
 ```
@@ -531,9 +522,9 @@ ansible --version
 
 **Configure Ansible Vault**
 
-Ansible communicates with target remote servers using SSH and usually we generate RSA key pair and copy the public key to each remote server, instead we'll use username and password credentials of odennav user.
+Ansible communicates with target remote servers using SSH and usually we generate RSA key pair and copy the public key to each remote server, instead we'll use username and password credentials of `odennav` user.
 
-This credentials are added to inventory host file but encrypted with ansible-vault
+This credentials are added to inventory host file but encrypted with `ansible-vault`
 
 Ensure all IPv4 addresses and user variables of remote servers are in the inventory file as shown
 
@@ -585,7 +576,7 @@ ansible-playbook -i hosts.inventory /elk-centralized-logging-system/ansible/add_
 
 Impplement the following steps below:
 
-- Return to the Kibana UI at `192.168.10.1:5601`.
+- Return to the Kibana UI at `10.33.10.1:5601`.
 
 - Click on the hamburger menu icon, then click on the **`Stack Management`** link under the **`Management`** section of the menu.
 
